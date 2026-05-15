@@ -3,6 +3,8 @@ VPC
 ************************************************************/
 module "vpc" {
   source = "../modules/vpc"
+
+  vpc_cidr = "10.0.0.0/16"
 }
 
 /************************************************************
@@ -11,6 +13,7 @@ Subnet
 module "subnet" {
   source = "../modules/subnet"
 
-  vpc_id = module.vpc.id_vpc
-  region = local.region_name
+  vpc_cidr = "10.0.0.0/16"
+  vpc_id   = module.vpc.id_vpc
+  region   = local.region_name
 }
