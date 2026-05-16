@@ -16,3 +16,13 @@ module "subnet" {
   vpc_cidr = "10.0.0.0/16"
   vpc_id   = module.vpc.id_vpc
 }
+
+/************************************************************
+Route Table
+************************************************************/
+module "rtb" {
+  source = "../modules/route_table"
+
+  vpc_id     = module.vpc.id_vpc
+  subnet_ids = module.subnet.id_subnet
+}
