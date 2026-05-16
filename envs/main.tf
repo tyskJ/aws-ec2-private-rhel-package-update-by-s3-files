@@ -26,3 +26,15 @@ module "rtb" {
   vpc_id     = module.vpc.id_vpc
   subnet_ids = module.subnet.id_subnet
 }
+
+/************************************************************
+PrivateLink
+************************************************************/
+module "privatelink" {
+  source = "../modules/privatelink"
+
+  vpc_id = module.vpc.id_vpc
+  rtb_ids = [
+    module.rtb.id_private_ec2_rtb
+  ]
+}
