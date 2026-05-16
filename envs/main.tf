@@ -53,3 +53,12 @@ module "privatelink" {
     module.sg.id_sg["endpoints"]
   ]
 }
+
+/************************************************************
+IAM
+************************************************************/
+module "iam" {
+  source = "../modules/iam_role"
+
+  partition = local.partition_name
+}
