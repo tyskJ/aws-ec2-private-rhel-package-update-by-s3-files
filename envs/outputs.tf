@@ -10,6 +10,15 @@ output "ec2_stop_command" {
   EOT
 }
 
+output "ec2_status_command" {
+  value = <<-EOT
+    aws ec2 describe-instances \
+    --instance-ids ${module.ec2.instance_id} \
+    --query "Reservations[].Instances[].State.Name" \
+    --profile admin
+  EOT
+}
+
 output "ssm_command" {
   value = <<-EOT
     ssh -i ./.key/keypair.pem ec2-user@${module.ec2.instance_id} \
