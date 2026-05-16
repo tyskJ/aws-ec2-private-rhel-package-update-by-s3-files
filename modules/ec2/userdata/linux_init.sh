@@ -25,11 +25,11 @@ set -euo pipefail
 ########################################
 # HostName
 ########################################
-hostnamectl set-hostname rhel-host
+hostnamectl set-hostname ${hostname}
 
 ########################################
 # SSM Agent Install
 ########################################
 cd /tmp
-dnf --disablerepo="*" install -y https://s3.ap-northeast-1.amazonaws.com/amazon-ssm-ap-northeast-1/latest/linux_amd64/amazon-ssm-agent.rpm
+dnf --disablerepo="*" install -y https://s3.${region_name}.amazonaws.com/amazon-ssm-${region_name}/latest/linux_amd64/amazon-ssm-agent.rpm
 systemctl enable --now amazon-ssm-agent

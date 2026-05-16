@@ -62,3 +62,18 @@ module "iam" {
 
   partition = local.partition_name
 }
+
+/************************************************************
+EC2
+************************************************************/
+module "ec2" {
+  source = "../modules/ec2"
+  depends_on = [
+    module.privatelink
+  ]
+
+  subnet_id             = module.subnet.id_subnet["private_ec2_1a"]
+  sg_id                 = module.sg.id_sg["ec2"]
+  instance_profile_name = module.iam.name_instance_profile
+  region                = local.region_name
+}
