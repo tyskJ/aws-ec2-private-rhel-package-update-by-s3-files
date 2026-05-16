@@ -46,4 +46,10 @@ module "privatelink" {
   rtb_ids = [
     module.rtb.id_private_ec2_rtb
   ]
+  endpoints_subnet_ids = [
+    module.subnet.id_subnet["private_endpoints_1a"]
+  ]
+  endpoints_sg_ids = [
+    module.sg.id_sg["endpoints"]
+  ]
 }
