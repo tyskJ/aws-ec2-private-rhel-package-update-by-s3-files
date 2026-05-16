@@ -15,5 +15,4 @@ module "subnet" {
 
   vpc_cidr = "10.0.0.0/16"
   vpc_id   = module.vpc.id_vpc
-  region   = local.region_name
 }

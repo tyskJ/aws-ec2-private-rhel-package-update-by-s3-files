@@ -5,7 +5,3 @@ variable "vpc_cidr" {
 variable "vpc_id" {
   type = string
 }
-
-variable "region" {
-  type = string
-}
