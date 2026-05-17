@@ -126,3 +126,17 @@ module "public_ec2" {
   keypair_id            = module.key_pair.id_keypair
   host_name             = "public-rhel"
 }
+
+/************************************************************
+S3 Files
+************************************************************/
+module "s3_files" {
+  source = "../modules/s3_files"
+
+  filesystem_s3_bucket_arn = module.s3.arn_s3_files_bucket
+  filesystem_role_arn      = module.iam.arn_s3_files_role
+  subnet_id                = module.subnet.id_subnet["private_mountpoint_1a"]
+  sg_ids = [
+    module.sg.id_sg["s3_files_mounttarget"]
+  ]
+}
