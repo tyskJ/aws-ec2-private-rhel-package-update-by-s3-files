@@ -46,6 +46,42 @@ resource "aws_iam_policy" "s3_ops" {
 }
 
 /************************************************************
+S3 Files Read Optimization Policy
+************************************************************/
+resource "aws_iam_policy" "s3_files_read_optimization" {
+  name = "iam-policy-s3-files-read-optimiation-for-ec2"
+  tags = {
+    Name = "iam-policy-s3-files-read-optimiation-for-ec2"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "S3ObjectReadAccess"
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:GetObjectVersion"
+        ],
+        Resource = [
+          "${var.s3_files_bucket_arn}/*"
+        ]
+      },
+      {
+        Sid    = "S3BucketListAccess"
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket"
+        ],
+        Resource = [
+          "${var.s3_files_bucket_arn}"
+        ]
+      }
+    ]
+  })
+}
+
+/************************************************************
 S3 Files Policy
 ************************************************************/
 resource "aws_iam_policy" "s3_files" {

@@ -24,8 +24,9 @@ resource "aws_iam_role" "private_ec2" {
 
 resource "aws_iam_role_policy_attachment" "private_ec2" {
   for_each = {
-    ssm             = "arn:${var.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    s3_files_client = "arn:${var.partition}:iam::aws:policy/AmazonS3FilesClientFullAccess"
+    ssm                        = "arn:${var.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    s3_files_client            = "arn:${var.partition}:iam::aws:policy/AmazonS3FilesClientFullAccess"
+    s3_files_read_optimization = aws_iam_policy.s3_files_read_optimization.arn
   }
   role       = aws_iam_role.private_ec2.name
   policy_arn = each.value
