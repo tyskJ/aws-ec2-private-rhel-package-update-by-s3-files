@@ -74,3 +74,44 @@ resource "aws_iam_instance_profile" "public_ec2" {
   name = aws_iam_role.public_ec2.name
   role = aws_iam_role.public_ec2.name
 }
+
+
+/************************************************************
+S3 Files Role
+************************************************************/
+resource "aws_iam_role" "s3_files" {
+  name = "s3-files-role"
+  tags = {
+    Name = "s3-files-role"
+  }
+  description = "Allows S3 Files (EFS) to call AWS services on your behalf"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowS3FilesAssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "elasticfilesystem.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = var.account_id
+          }
+          ArnLike = {
+            "aws:SourceArn" = "arn:${var.partition}:s3files:${var.region}:${var.account_id}:file-system/*"
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "s3_files" {
+  for_each = {
+    s3_files = aws_iam_policy.s3_files.arn
+  }
+  role       = aws_iam_role.s3_files.name
+  policy_arn = each.value
+}

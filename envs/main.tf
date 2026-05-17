@@ -81,7 +81,10 @@ IAM
 module "iam" {
   source = "../modules/iam_role"
 
-  partition = local.partition_name
+  partition  = local.partition_name
+  region     = local.region_name
+  account_id = local.account_id
+  s3_files_bucket_arn = module.s3.arn_s3_files_bucket
 }
 
 /************************************************************
