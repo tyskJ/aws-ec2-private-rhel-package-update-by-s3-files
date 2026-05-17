@@ -34,6 +34,15 @@ resource "aws_security_group_rule" "endpoints_sg_ingress_https_from_private_ec2_
   security_group_id        = aws_security_group.this["endpoints"].id
   description              = "From Private EC2 SG HTTPS"
 }
+resource "aws_security_group_rule" "s3_files_mouttarget_ingress_nfs_from_private_ec2_sg" {
+  type                     = "ingress"
+  from_port                = 2049
+  to_port                  = 2049
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.this["private_ec2"].id
+  security_group_id        = aws_security_group.this["s3_files_mouttarget"].id
+  description              = "From Private EC2 SG NFS"
+}
 
 ### Egress
 resource "aws_security_group_rule" "public_ec2_sg_egress_all" {
