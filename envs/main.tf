@@ -54,6 +54,7 @@ module "privatelink" {
 
   vpc_id = module.vpc.id_vpc
   rtb_ids = [
+    module.rtb.id_rtb["public_ec2"],
     module.rtb.id_rtb["private_ec2"]
   ]
   endpoints_subnet_ids = [
