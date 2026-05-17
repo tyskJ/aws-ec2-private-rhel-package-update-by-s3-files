@@ -1,6 +1,9 @@
 locals {
   rtbs = {
-    ec2 = {
+    public_ec2 = {
+      name = "public-ec2-rtb"
+    }
+    private_ec2 = {
       name = "private-ec2-rtb"
     }
     eni = {
@@ -8,8 +11,11 @@ locals {
     }
   }
   rtb_assoc = {
+    public_ec2_1a = {
+      rtb_key = "public_ec2"
+    }
     private_ec2_1a = {
-      rtb_key = "ec2"
+      rtb_key = "private_ec2"
     }
     private_mountpoint_1a = {
       rtb_key = "eni"

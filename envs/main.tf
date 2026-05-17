@@ -18,6 +18,15 @@ module "subnet" {
 }
 
 /************************************************************
+Internet Gateway
+************************************************************/
+module "igw" {
+  source = "../modules/internet_gateway"
+
+  vpc_id = module.vpc.id_vpc
+}
+
+/************************************************************
 Route Table
 ************************************************************/
 module "rtb" {
@@ -25,6 +34,7 @@ module "rtb" {
 
   vpc_id     = module.vpc.id_vpc
   subnet_ids = module.subnet.id_subnet
+  igw_id     = module.igw.id_igw
 }
 
 /************************************************************
@@ -44,7 +54,7 @@ module "privatelink" {
 
   vpc_id = module.vpc.id_vpc
   rtb_ids = [
-    module.rtb.id_private_ec2_rtb
+    module.rtb.id_rtb["private_ec2"]
   ]
   endpoints_subnet_ids = [
     module.subnet.id_subnet["private_endpoints_1a"]
@@ -64,16 +74,41 @@ module "iam" {
 }
 
 /************************************************************
+Key Pair
+************************************************************/
+module "key_pair" {
+  source = "../modules/key_pair"
+}
+
+/************************************************************
 EC2
 ************************************************************/
-module "ec2" {
+module "private_ec2" {
   source = "../modules/ec2"
   depends_on = [
     module.privatelink
   ]
 
+  ami_id                = data.aws_ami.rhel9.id
   subnet_id             = module.subnet.id_subnet["private_ec2_1a"]
-  sg_id                 = module.sg.id_sg["ec2"]
-  instance_profile_name = module.iam.name_instance_profile
+  sg_id                 = module.sg.id_sg["private_ec2"]
+  instance_profile_name = module.iam.name_private_ec2_instance_profile
   region                = local.region_name
+  keypair_id            = module.key_pair.id_keypair
+  host_name             = "private-rhel"
+}
+
+module "public_ec2" {
+  source = "../modules/ec2"
+  depends_on = [
+    module.privatelink
+  ]
+
+  ami_id                = data.aws_ami.rhel9.id
+  subnet_id             = module.subnet.id_subnet["public_ec2_1a"]
+  sg_id                 = module.sg.id_sg["public_ec2"]
+  instance_profile_name = module.iam.name_public_ec2_instance_profile
+  region                = local.region_name
+  keypair_id            = module.key_pair.id_keypair
+  host_name             = "public-rhel"
 }

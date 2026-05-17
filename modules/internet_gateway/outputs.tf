@@ -1,8 +1,6 @@
 /************************************************************
-Route Table ID
+Internet Gateway ID
 ************************************************************/
-output "id_rtb" {
-  value = {
-    for k, v in aws_route_table.this : k => v.id
-  }
+output "id_igw" {
+  value = aws_internet_gateway.this.id
 }

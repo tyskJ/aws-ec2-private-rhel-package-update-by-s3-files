@@ -1,10 +1,10 @@
 /************************************************************
-EC2 Role
+Private EC2 Role
 ************************************************************/
-resource "aws_iam_role" "ec2" {
-  name = "ec2-role"
+resource "aws_iam_role" "private_ec2" {
+  name = "private-ec2-role"
   tags = {
-    Name = "ec2-role"
+    Name = "private-ec2-role"
   }
   description = "Allows EC2 to call AWS services on your behalf"
   assume_role_policy = jsonencode({
@@ -22,18 +22,55 @@ resource "aws_iam_role" "ec2" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ec2" {
+resource "aws_iam_role_policy_attachment" "private_ec2" {
   for_each = {
     ssm = "arn:${var.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
-  role       = aws_iam_role.ec2.name
+  role       = aws_iam_role.private_ec2.name
+  policy_arn = each.value
+}
+
+/************************************************************
+Public EC2 Role
+************************************************************/
+resource "aws_iam_role" "public_ec2" {
+  name = "public-ec2-role"
+  tags = {
+    Name = "public-ec2-role"
+  }
+  description = "Allows EC2 to call AWS services on your behalf"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = ""
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "public_ec2" {
+  for_each = {
+    ssm = "arn:${var.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  }
+  role       = aws_iam_role.public_ec2.name
   policy_arn = each.value
 }
 
 /************************************************************
 EC2 Instance Profile
 ************************************************************/
-resource "aws_iam_instance_profile" "ec2" {
-  name = aws_iam_role.ec2.name
-  role = aws_iam_role.ec2.name
+resource "aws_iam_instance_profile" "private_ec2" {
+  name = aws_iam_role.private_ec2.name
+  role = aws_iam_role.private_ec2.name
+}
+
+resource "aws_iam_instance_profile" "public_ec2" {
+  name = aws_iam_role.public_ec2.name
+  role = aws_iam_role.public_ec2.name
 }

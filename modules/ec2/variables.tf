@@ -1,3 +1,7 @@
+variable "ami_id" {
+  type = string
+}
+
 variable "subnet_id" {
   type = string
 }
@@ -11,5 +15,13 @@ variable "instance_profile_name" {
 }
 
 variable "region" {
+  type = string
+}
+
+variable "keypair_id" {
+  type = string
+}
+
+variable "host_name" {
   type = string
 }

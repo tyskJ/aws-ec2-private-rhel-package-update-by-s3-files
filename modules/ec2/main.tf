@@ -1,31 +1,9 @@
 /************************************************************
-KeyPair
-************************************************************/
-resource "tls_private_key" "ssh_keygen" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
-resource "local_sensitive_file" "keypair_pem" {
-  filename        = "${path.module}/../../envs/.key/keypair.pem"
-  content         = tls_private_key.ssh_keygen.private_key_pem
-  file_permission = "0600"
-}
-
-resource "aws_key_pair" "keypair" {
-  key_name   = "common-keypair"
-  public_key = tls_private_key.ssh_keygen.public_key_openssh
-  tags = {
-    Name = "common-keypair"
-  }
-}
-
-/************************************************************
 EC2
 ************************************************************/
 resource "aws_instance" "this" {
-  ami           = data.aws_ami.rhel9.id
-  key_name      = aws_key_pair.keypair.id
+  ami           = var.ami_id
+  key_name      = var.keypair_id
   instance_type = "m8i-flex.xlarge"
   subnet_id     = var.subnet_id
   vpc_security_group_ids = [
@@ -40,7 +18,7 @@ resource "aws_instance" "this" {
     delete_on_termination = true
     encrypted             = true
     tags = {
-      Name = "ec2-root-volume"
+      Name = "${var.host_name}-ec2-root-volume"
     }
   }
   metadata_options {
@@ -55,12 +33,12 @@ resource "aws_instance" "this" {
   iam_instance_profile    = var.instance_profile_name
   user_data_base64 = base64gzip(
     templatefile("${path.module}/userdata/linux_init.sh", {
-      hostname    = "rhel-host"
+      hostname    = var.host_name
       region_name = var.region
     })
   )
   tags = {
-    Name = "ec2"
+    Name = var.host_name
   }
   # userdataを変更すると再起動が走るため抑止
   # 代わりに、user_data_replace_on_change は効かなくなる
