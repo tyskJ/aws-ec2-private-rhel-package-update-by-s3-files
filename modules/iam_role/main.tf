@@ -56,7 +56,8 @@ resource "aws_iam_role" "public_ec2" {
 
 resource "aws_iam_role_policy_attachment" "public_ec2" {
   for_each = {
-    ssm = "arn:${var.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    ssm    = "arn:${var.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    s3_ops = aws_iam_policy.s3_ops.arn
   }
   role       = aws_iam_role.public_ec2.name
   policy_arn = each.value

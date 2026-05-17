@@ -1,4 +1,51 @@
 /************************************************************
+S3 Operation Policy
+************************************************************/
+resource "aws_iam_policy" "s3_ops" {
+  name = "iam-policy-s3-ops-for-ec2"
+  tags = {
+    Name = "iam-policy-s3-ops-for-ec2"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowListAllBuckets"
+        Effect = "Allow"
+        Action = [
+          "s3:ListAllMyBuckets"
+        ],
+        Resource = [
+          "*"
+        ]
+      },
+      {
+        Sid    = "AllowListOfInsideSpecificBucket"
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket"
+        ],
+        Resource = [
+          "${var.file_integration_bucket_arn}"
+        ]
+      },
+      {
+        Sid    = "AllowWiteOfInsideSpecificBucket"
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject"
+        ],
+        Resource = [
+          "${var.file_integration_bucket_arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
+/************************************************************
 S3 Files Policy
 ************************************************************/
 resource "aws_iam_policy" "s3_files" {
