@@ -35,49 +35,6 @@
   
   aws login --profile admin
 
-.. code-block:: bash
-
-  CONFIG="$HOME/.aws/config"
-  
-  PROFILES=(
-    admin
-  )
-  
-  for PROFILE in "${PROFILES[@]}"; do
-    LINE="credential_process = aws configure export-credentials --profile ${PROFILE}"
-  
-    awk -v profile="$PROFILE" -v line="$LINE" '
-    BEGIN {
-      in_profile = 0
-      found = 0
-    }
-  
-    /^\[profile[[:space:]]+/ {
-      # 対象 profile を抜ける直前に、未追加なら挿入
-      if (in_profile && !found) {
-        print line
-      }
-      in_profile = ($0 == "[profile " profile "]")
-      found = 0
-    }
-  
-    {
-      if (in_profile && $0 ~ /^[[:space:]]*credential_process[[:space:]]*=/) {
-        found = 1
-      }
-      print
-    }
-  
-    END {
-      # ファイル末尾が対象 profile の場合
-      if (in_profile && !found) {
-        print line
-      }
-    }
-    ' "$CONFIG" > "$CONFIG.tmp" && command mv -f "$CONFIG.tmp" "$CONFIG"
-  
-  done
-
 事前作業(1)
 =====================================================================
 1. 各種モジュールインストール
@@ -191,7 +148,6 @@
 * `Terraform v1.9 では null_resource を安全に terraform_data に置き換えることができる - Zenn <https://zenn.dev/terraform_jp/articles/tf-null-resource-to-terraform-data>`_
 * `【Terraform🧑🏻‍🚀】tfstateファイルの分割パターンとディレクトリ構成への適用 <https://hiroki-hasegawa.hatenablog.jp/entry/2023/07/05/001756>`_
 * `Terraformで自己署名証明書の作成からALBの適用までを一発で実施する - DevelopersIO <https://dev.classmethod.jp/articles/terraform-self-signed-certificate-alb-setup/>`_
-* `aws login コマンドの認証情報で Terraform を実行する - Zenn <https://zenn.dev/yukit7s/articles/4a81811d64a200>`_
 * `OpenAPI Specification 3.0.3規約 <https://future-architect.github.io/coding-standards/documents/forOpenAPISpecification/OpenAPI_Specification_3.0.3.html>`_
 * `Terraform AWS Provider version 6がリリースされ、複数リージョンへの展開がかなり簡単になりました - DevelopersIO <https://dev.classmethod.jp/articles/terraform-aws-provider-version-6/>`_
 * `【Terraform】AWS Provider v6 からはリソースレベルでリージョンを設定できる - Zenn <https://zenn.dev/terraform_jp/articles/tf-aws-v6-per-resource-region>`_
